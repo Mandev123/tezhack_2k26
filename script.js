@@ -55,6 +55,11 @@ function submitRegistration() {
     const submitButton = registrationForm.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
 
+    if (!GOOGLE_APPS_SCRIPT_URL) {
+        alert("Google Apps Script URL is not configured. Add the deployment secret or config before submitting.");
+        return Promise.reject(new Error("Missing Apps Script URL"));
+    }
+
     submitButton.disabled = true;
     submitButton.textContent = "Submitting...";
 
@@ -171,11 +176,6 @@ registrationForm.addEventListener("submit", function (event) {
 
     if (!registrationForm.checkValidity()) {
         registrationForm.reportValidity();
-        return;
-    }
-
-    if (!GOOGLE_APPS_SCRIPT_URL) {
-        alert("Registration is not configured yet. Please contact the event organizers.");
         return;
     }
 
