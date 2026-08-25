@@ -15,8 +15,32 @@ const GOOGLE_APPS_SCRIPT_URL = window.GOOGLE_APPS_SCRIPT_URL || "";
 const UPI_ID = window.TEZHACK_UPI_ID || DEFAULT_UPI_ID;
 
 function saveFormState() {
-    const formData = new FormData(registrationForm);
-    const data = Object.fromEntries(formData.entries());
+    const data = {};
+
+    Array.from(registrationForm.elements).forEach((element) => {
+        if (!element.name || element.disabled) {
+            return;
+        }
+
+        if (element.type === "radio") {
+            if (element.checked) {
+                data[element.name] = element.value;
+            }
+            return;
+        }
+
+        if (element.type === "checkbox") {
+            data[element.name] = element.checked ? (element.value || true) : false;
+            return;
+        }
+
+        if (element.type === "file") {
+            return;
+        }
+
+        data[element.name] = element.value;
+    });
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -28,36 +52,37 @@ function restoreFormState() {
 
     try {
         const parsed = JSON.parse(savedData);
+
         Object.entries(parsed).forEach(([key, value]) => {
-            const field = registrationForm.elements.namedItem(key);
-            if (!field) {
+            const fieldList = registrationForm.elements.namedItem(key);
+            if (!fieldList) {
                 return;
             }
 
-            if (field instanceof RadioNodeList) {
-                field.forEach((radio) => {
+            if (fieldList instanceof RadioNodeList) {
+                fieldList.forEach((radio) => {
                     radio.checked = String(value) === String(radio.value);
                 });
                 return;
             }
 
-            if (field.type === "checkbox") {
-                field.checked = Boolean(value);
+            if (fieldList.type === "checkbox") {
+                fieldList.checked = value === true || value === "true" || value === fieldList.value;
                 return;
             }
 
-            if (field.type === "radio") {
-                field.checked = String(value) === String(field.value);
+            if (fieldList.type === "radio") {
+                fieldList.checked = String(value) === String(fieldList.value);
                 return;
             }
 
-            field.value = value;
+            fieldList.value = value;
         });
 
         if (teamSize.value) {
             renderMembers();
             Object.entries(parsed).forEach(([key, value]) => {
-                if (key.startsWith("member") && value) {
+                if (key.startsWith("member") && value !== undefined && value !== null && value !== false) {
                     const memberField = registrationForm.elements.namedItem(key);
                     if (memberField && !(memberField instanceof RadioNodeList)) {
                         memberField.value = value;
@@ -108,8 +133,41 @@ function closePaymentModal() {
     transactionIdInput.setCustomValidity("");
 }
 
+function buildRegistrationPayload() {
+    const registrationData = {};
+
+    Array.from(registrationForm.elements).forEach((element) => {
+        if (!element.name || element.disabled || element.type === "file") {
+            return;
+        }
+
+        if (element.type === "radio") {
+            if (element.checked) {
+                registrationData[element.name] = element.value;
+            } else if (!(element.name in registrationData)) {
+                registrationData[element.name] = "";
+            }
+            return;
+        }
+
+        if (element.type === "checkbox") {
+            registrationData[element.name] = element.checked ? (element.value || "Yes") : "";
+            return;
+        }
+
+        registrationData[element.name] = element.value || "";
+    });
+
+    registrationData.paymentStatus = "Paid - UPI details submitted";
+    registrationData.transactionId = transactionIdInput.value.trim();
+    registrationData.payerUpiId = payerUpiIdInput.value.trim();
+
+    return registrationData;
+}
+
 function submitRegistration() {
     const submitButton = registrationForm.querySelector('button[type="submit"]');
+    const modalSubmitButton = document.getElementById("confirmPaymentBtn");
     const originalText = submitButton.textContent;
 
     if (!GOOGLE_APPS_SCRIPT_URL) {
@@ -117,14 +175,16 @@ function submitRegistration() {
         return Promise.reject(new Error("Missing Apps Script URL"));
     }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "Submitting...";
+    if (submitButton.disabled || modalSubmitButton.disabled) {
+        return Promise.resolve();
+    }
 
-    const formData = new FormData(registrationForm);
-    const registrationData = Object.fromEntries(formData.entries());
-    registrationData.paymentStatus = "Paid - UPI details submitted";
-    registrationData.transactionId = transactionIdInput.value.trim();
-    registrationData.payerUpiId = payerUpiIdInput.value.trim();
+    submitButton.disabled = true;
+    modalSubmitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+    modalSubmitButton.textContent = "Submitting...";
+
+    const registrationData = buildRegistrationPayload();
 
     return fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: "POST",
@@ -148,7 +208,9 @@ function submitRegistration() {
         })
         .finally(() => {
             submitButton.disabled = false;
+            modalSubmitButton.disabled = false;
             submitButton.textContent = originalText;
+            modalSubmitButton.textContent = "Confirm Payment & Submit";
         });
 }
 
