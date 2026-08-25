@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEZHACK 2026 | Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="hero-content">
+            <p class="organizer">
+                Tezpur University Computer Society × CSE Career Hub
+            </p>
+
+            <h1 class="hero-title">
+                <span class="glitch" data-text="TEZHACK">TEZHACK</span>
+                <span class="hero-year">2026</span>
+            </h1>
+
+            <p class="tagline">Build bold. Ship fast. Together.</p>
+
+            <p class="description">
+                A two-day national hackathon where students from across India collaborate to build innovative tech solutions. Web, AI/ML, IoT, blockchain—bring your skills. We'll bring the energy.
+            </p>
+
+            <a href="#registration" class="register-btn">Start Registration</a>
+        </div>
+    </header>
+
+    <!-- EVENT INFORMATION -->
+    <section class="event-info">
+
+        <div class="info-card" style="--accent: #00d9ff;">
+            <div class="info-marker">📅</div>
+            <h3>When</h3>
+            <p>4–6 September 2026</p>
+        </div>
+
+        <div class="info-card" style="--accent: #ff6b5b;">
+            <div class="info-marker">📍</div>
+            <h3>Where</h3>
+            <p>Tezpur University<br>Department of CSE</p>
+        </div>
+
+        <div class="info-card" style="--accent: #7c3aed;">
+            <div class="info-marker">👥</div>
+            <h3>Who</h3>
+            <p>Students from all colleges<br>& institutions</p>
+        </div>
+
+        <div class="info-card" style="--accent: #00d9ff;">
+            <div class="info-marker">👨‍💻</div>
+            <h3>Team Size</h3>
+            <p>2–4 members</p>
+        </div>
+
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about">
+        <h2>Why TEZHACK?</h2>
+
+        <p>
+            Forget generic competitions. TEZHACK is where builders, hackers, and innovators from across India come together for 48 hours of pure creation. Whether you're into web development, AI/ML, app building, IoT, or blockchain, this is your arena. You'll learn from industry mentors, collaborate with sharp minds, and compete for prizes. Most importantly, you'll ship something real.
+        </p>
+
+        <p>
+            Fill out the form below carefully. All details will be used for ID generation, communication, and certificates.
+        </p>
+    </section>
+
+    <!-- REGISTRATION FEE SECTION -->
+    <section class="fee-section">
+        <div class="fee-box">
+            <span class="fee-label">Important</span>
+            <h2>Registration Fee</h2>
+            <p>₹100 per team. Complete the UPI payment before your registration is submitted.</p>
+            <p class="fee-note">Pay through the secure UPI modal below using INR and confirm your transaction ID to finish registration.</p>
+        </div>
+    </section>
+
+    <!-- REGISTRATION FORM -->
+    <section class="registration" id="registration">
+        <div class="form-box">
+
+            <h2>Team Registration</h2>
+
+            <p class="form-intro">
+                All fields marked with * are required. Double-check details—they'll be on your ID and certificates.
+            </p>
+
+            <form id="registrationForm">
+
+                <!-- TEAM DETAILS -->
+                <fieldset class="form-section">
+                    <legend>Team Details</legend>
+
+                    <label for="teamName">Team Name *</label>
+                    <input type="text" id="teamName" name="teamName"
+                           placeholder="e.g. Bug Crushers" required>
+
+                    <div class="field-grid">
+                        <div class="field">
+                            <label for="teamSize">Team Size *</label>
+                            <select id="teamSize" name="teamSize" required>
+                                <option value="">— Select —</option>
+                                <option value="2">2 Members</option>
+                                <option value="3">3 Members</option>
+                                <option value="4">4 Members</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="collegeName">Institution *</label>
+                            <input type="text" id="collegeName" name="collegeName"
+                                   placeholder="Full college/institute name" required>
+                        </div>
+                    </div>
+
+                    <label for="instituteLocation">City &amp; State *</label>
+                    <input type="text" id="instituteLocation" name="instituteLocation"
+                           placeholder="e.g. Guwahati, Assam" required>
+                </fieldset>
+
+                <!-- TEAM LEADER -->
+                <fieldset class="form-section">
+                    <legend>Team Leader</legend>
+
+                    <div class="field-grid">
+                        <div class="field">
+                            <label for="leaderName">Full Name *</label>
+                            <input type="text" id="leaderName" name="leaderName" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="leaderEmail">Email *</label>
+                            <input type="email" id="leaderEmail" name="leaderEmail" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="leaderPhone">Phone / WhatsApp *</label>
+                            <input type="tel" id="leaderPhone" name="leaderPhone" required>
+                        </div>
+
+                        <div class="field">
+                            <label for="leaderYearBranch">Year &amp; Branch *</label>
+                            <input type="text" id="leaderYearBranch" name="leaderYearBranch"
+                                   placeholder="e.g. 2nd Yr, CSE" required>
+                        </div>
+                    </div>
+
+                    <label for="leaderGithubLinkedin">
+                        GitHub / LinkedIn Profile
+                        <span class="field-hint">Optional</span>
+                    </label>
+                    <input type="url" id="leaderGithubLinkedin"
+                           name="leaderGithubLinkedin" placeholder="https://github.com/yourprofile">
+                </fieldset>
+
+                <!-- DYNAMIC MEMBERS -->
+                <div id="membersContainer"></div>
+
+                <!-- PROJECT & TRACK -->
+                <fieldset class="form-section">
+                    <legend>Your Project</legend>
+
+                    <label>Do you have a project idea? *</label>
+                    <div class="inline-options">
+                        <label class="option-button">
+                            <input type="radio" name="hasProjectIdea" value="Yes" required>
+                            <span>Yes</span>
+                        </label>
+
+                        <label class="option-button">
+                            <input type="radio" name="hasProjectIdea" value="No">
+                            <span>Deciding on-site</span>
+                        </label>
+                    </div>
+
+                    <label for="preferredTrack">Preferred Track *</label>
+                    <select id="preferredTrack" name="preferredTrack" required>
+                        <option value="">— Select a track —</option>
+                        <option>Web Development</option>
+                        <option>AI / Machine Learning</option>
+                        <option>Mobile App Development</option>
+                        <option>IoT &amp; Hardware</option>
+                        <option>Blockchain</option>
+                        <option>Other</option>
+                    </select>
+
+                    <label for="techStack">
+                        Tech Stack You Know
+                        <span class="field-hint">Optional — helps us pair you better</span>
+                    </label>
+                    <textarea id="techStack" name="techStack"
+                              placeholder="e.g. React, Python, Firebase, Arduino"></textarea>
+                </fieldset>
+
+                <!-- LOGISTICS -->
+                <fieldset class="form-section">
+                    <legend>Logistics</legend>
+
+                    <label>Accommodation needed? *</label>
+                    <div class="inline-options">
+                        <label class="option-button">
+                            <input type="radio" name="accommodation" value="Yes" required>
+                            <span>Yes</span>
+                        </label>
+
+                        <label class="option-button">
+                            <input type="radio" name="accommodation" value="No">
+                            <span>No</span>
+                        </label>
+                    </div>
+
+                    <label>Dietary Preference *</label>
+                    <div class="inline-options">
+                        <label class="option-button">
+                            <input type="radio" name="dietaryPreference" value="Vegetarian" required>
+                            <span>Vegetarian</span>
+                        </label>
+
+                        <label class="option-button">
+                            <input type="radio" name="dietaryPreference" value="Non-Vegetarian">
+                            <span>Non-Vegetarian</span>
+                        </label>
+                    </div>
+
+                    <label for="heardAbout">
+                        How'd you hear about us?
+                        <span class="field-hint">Optional</span>
+                    </label>
+                    <input type="text" id="heardAbout" name="heardAbout"
+                           placeholder="Instagram, college notice, friend, etc.">
+                </fieldset>
+
+                <!-- CONSENT -->
+                <fieldset class="form-section consent-section">
+                    <legend>Consent</legend>
+
+                    <div class="consent-row">
+                        <input type="checkbox" id="rulesConsent" name="rulesConsent" value="Yes" required>
+                        <label for="rulesConsent">
+                            I agree to the rules and code of conduct of TEZHACK 2026.
+                        </label>
+                    </div>
+
+                    <div class="consent-row">
+                        <input type="checkbox" id="attendanceConsent" name="attendanceConsent" value="Yes" required>
+                        <label for="attendanceConsent">
+                            I understand this is an in-person 48-hour event (4–5 September 2026) and my team will be present the full time.
+                        </label>
+                    </div>
+
+                    <div class="consent-row">
+                        <input type="checkbox" id="paymentConsent" name="paymentConsent" value="Yes" required>
+                        <label for="paymentConsent">
+                            I agree to pay ₹100 per team via UPI before final registration is submitted.
+                        </label>
+                    </div>
+                </fieldset>
+
+                <button type="submit" class="submit-btn">Submit Registration</button>
+
+            </form>
+
+            <p class="form-footer">
+                By registering, you're in. See you at TEZHACK 2026.
+            </p>
+        </div>
+    </section>
+
+    <div class="modal-backdrop" id="paymentModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentModalTitle">
+            <button type="button" class="modal-close" id="closePaymentModal" aria-label="Close payment dialog">×</button>
+
+            <div class="modal-header">
+                <span class="fee-label">Payment</span>
+                <h3 id="paymentModalTitle">Complete UPI Payment</h3>
+            </div>
+
+            <p class="modal-amount">Amount: <strong>₹100</strong></p>
+
+            <div class="upi-panel">
+                <div class="upi-qr-box">
+                    <img id="upiQrCode" src="" alt="UPI QR code for payment" />
+                </div>
+
+                <div class="upi-details">
+                    <p>UPI ID</p>
+                    <div class="upi-id-box"><strong id="upiIdValue">sharmamandev1@ybl</strong></div>
+                    <a id="upiPayLink" class="upi-pay-link" href="#" target="_blank" rel="noreferrer">Pay via UPI app</a>
+                </div>
+            </div>
+
+            <div class="payment-field">
+                <label for="transactionId">UPI Transaction ID <span class="required-mark">*</span></label>
+                <input type="text" id="transactionId" name="transactionId" placeholder="e.g. 1234567890123" required>
+            </div>
+
+            <div class="payment-field">
+                <label for="payerUpiId">Payer UPI ID <span class="field-hint">Optional</span></label>
+                <input type="text" id="payerUpiId" name="payerUpiId" placeholder="e.g. yourname@upi">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="secondary-btn" id="cancelPaymentBtn">Cancel</button>
+                <button type="button" class="submit-btn modal-submit-btn" id="confirmPaymentBtn">Confirm Payment &amp; Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <h3>Questions?</h3>
+            <p>
+                Reach out to us:<br>
+                <strong>tezhack@tezpuruniversity.ac.in</strong> | <strong>+91 XXXX XXXXX</strong>
+            </p>
+            <p class="footer-tagline">
+                Build bold. Ship fast. Together. See you at TEZHACK 2026.
+            </p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
