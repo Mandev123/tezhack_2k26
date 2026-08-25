@@ -8,10 +8,55 @@ const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
 const cancelPaymentBtn = document.getElementById("cancelPaymentBtn");
 const closePaymentModalBtn = document.getElementById("closePaymentModal");
 
+const STORAGE_KEY = "tezhack2026_registration_form";
 const PAYMENT_AMOUNT = 100;
 const DEFAULT_UPI_ID = "sharmamandev1@ybl";
 const GOOGLE_APPS_SCRIPT_URL = window.GOOGLE_APPS_SCRIPT_URL || "";
 const UPI_ID = window.TEZHACK_UPI_ID || DEFAULT_UPI_ID;
+
+function saveFormState() {
+    const formData = new FormData(registrationForm);
+    const data = Object.fromEntries(formData.entries());
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function restoreFormState() {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (!savedData) {
+        return;
+    }
+
+    try {
+        const parsed = JSON.parse(savedData);
+        Object.entries(parsed).forEach(([key, value]) => {
+            const field = registrationForm.elements.namedItem(key);
+            if (!field) {
+                return;
+            }
+
+            if (field.type === "radio" || field.type === "checkbox") {
+                field.checked = String(value) === String(field.value);
+                return;
+            }
+
+            field.value = value;
+        });
+
+        if (teamSize.value) {
+            renderMembers();
+            Object.entries(parsed).forEach(([key, value]) => {
+                if (key.startsWith("member") && value) {
+                    const field = registrationForm.elements.namedItem(key);
+                    if (field) {
+                        field.value = value;
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error("Unable to restore saved form state:", error);
+    }
+}
 
 function buildUpiLink() {
     const params = new URLSearchParams({
@@ -56,7 +101,7 @@ function submitRegistration() {
     const originalText = submitButton.textContent;
 
     if (!GOOGLE_APPS_SCRIPT_URL) {
-        alert("Google Apps Script URL is not configured. Add the deployment secret or config before submitting.");
+        alert("Missing GitHub secret: GOOGLE_APPS_SCRIPT_URL. Add it in your repo settings and redeploy the site before submitting.");
         return Promise.reject(new Error("Missing Apps Script URL"));
     }
 
@@ -81,6 +126,7 @@ function submitRegistration() {
             alert("Registration submitted! Check your email for confirmation. 🚀");
             registrationForm.reset();
             membersContainer.innerHTML = "";
+            localStorage.removeItem(STORAGE_KEY);
             closePaymentModal();
         })
         .catch((error) => {
@@ -169,7 +215,15 @@ function renderMembers() {
     }
 }
 
-teamSize.addEventListener("change", renderMembers);
+teamSize.addEventListener("change", function () {
+    renderMembers();
+    saveFormState();
+});
+
+registrationForm.addEventListener("input", saveFormState);
+registrationForm.addEventListener("change", saveFormState);
+
+restoreFormState();
 
 registrationForm.addEventListener("submit", function (event) {
     event.preventDefault();
