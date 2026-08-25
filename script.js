@@ -34,7 +34,19 @@ function restoreFormState() {
                 return;
             }
 
-            if (field.type === "radio" || field.type === "checkbox") {
+            if (field instanceof RadioNodeList) {
+                field.forEach((radio) => {
+                    radio.checked = String(value) === String(radio.value);
+                });
+                return;
+            }
+
+            if (field.type === "checkbox") {
+                field.checked = Boolean(value);
+                return;
+            }
+
+            if (field.type === "radio") {
                 field.checked = String(value) === String(field.value);
                 return;
             }
@@ -46,9 +58,9 @@ function restoreFormState() {
             renderMembers();
             Object.entries(parsed).forEach(([key, value]) => {
                 if (key.startsWith("member") && value) {
-                    const field = registrationForm.elements.namedItem(key);
-                    if (field) {
-                        field.value = value;
+                    const memberField = registrationForm.elements.namedItem(key);
+                    if (memberField && !(memberField instanceof RadioNodeList)) {
+                        memberField.value = value;
                     }
                 }
             });
