@@ -134,7 +134,7 @@ function closePaymentModal() {
 }
 
 function buildRegistrationPayload() {
-    const registrationData = {};
+    const raw = {};
 
     Array.from(registrationForm.elements).forEach((element) => {
         if (!element.name || element.disabled || element.type === "file") {
@@ -143,26 +143,60 @@ function buildRegistrationPayload() {
 
         if (element.type === "radio") {
             if (element.checked) {
-                registrationData[element.name] = element.value;
-            } else if (!(element.name in registrationData)) {
-                registrationData[element.name] = "";
+                raw[element.name] = element.value;
+            } else if (!(element.name in raw)) {
+                raw[element.name] = "";
             }
             return;
         }
 
         if (element.type === "checkbox") {
-            registrationData[element.name] = element.checked ? (element.value || "Yes") : "";
+            raw[element.name] = element.checked ? (element.value || "Yes") : "";
             return;
         }
 
-        registrationData[element.name] = element.value || "";
+        raw[element.name] = element.value || "";
     });
 
-    registrationData.paymentStatus = "Paid - UPI details submitted";
-    registrationData.transactionId = transactionIdInput.value.trim();
-    registrationData.payerUpiId = payerUpiIdInput.value.trim();
+    return {
+        teamName: raw.teamName || "",
+        teamSize: raw.teamSize || "",
+        institute: raw.collegeName || "",
+        city: raw.instituteLocation || "",
 
-    return registrationData;
+        leaderName: raw.leaderName || "",
+        leaderEmail: raw.leaderEmail || "",
+        leaderPhone: raw.leaderPhone || "",
+        leaderYear: raw.leaderYearBranch || "",
+        leaderGithub: raw.leaderGithubLinkedin || "",
+
+        m2Name: raw.member2Name || "",
+        m2Email: raw.member2Email || "",
+        m2Phone: raw.member2Phone || "",
+        m2Year: raw.member2YearBranch || "",
+
+        m3Name: raw.member3Name || "",
+        m3Email: raw.member3Email || "",
+        m3Phone: raw.member3Phone || "",
+        m3Year: raw.member3YearBranch || "",
+
+        m4Name: raw.member4Name || "",
+        m4Email: raw.member4Email || "",
+        m4Phone: raw.member4Phone || "",
+        m4Year: raw.member4YearBranch || "",
+
+        idea: raw.hasProjectIdea || "",
+        track: raw.preferredTrack || "",
+        stack: raw.techStack || "",
+
+        stay: raw.accommodation || "",
+        diet: raw.dietaryPreference || "",
+        heard: raw.heardAbout || "",
+
+        paymentStatus: "Paid - UPI details submitted",
+        transactionId: transactionIdInput.value.trim(),
+        payerUpiId: payerUpiIdInput.value.trim()
+    };
 }
 
 function submitRegistration() {
