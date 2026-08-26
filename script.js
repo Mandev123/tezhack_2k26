@@ -4,7 +4,6 @@ const registrationForm = document.getElementById("registrationForm");
 const paymentModal = document.getElementById("paymentModal");
 const transactionIdInput = document.getElementById("transactionId");
 const payerUpiIdInput = document.getElementById("payerUpiId");
-const paymentScreenshotInput = document.getElementById("paymentScreenshot");
 const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
 const cancelPaymentBtn = document.getElementById("cancelPaymentBtn");
 const closePaymentModalBtn = document.getElementById("closePaymentModal");
@@ -131,39 +130,10 @@ function closePaymentModal() {
     paymentModal.setAttribute("aria-hidden", "true");
     transactionIdInput.value = "";
     payerUpiIdInput.value = "";
-    if (paymentScreenshotInput) {
-        paymentScreenshotInput.value = "";
-        paymentScreenshotInput.setCustomValidity("");
-    }
     transactionIdInput.setCustomValidity("");
 }
 
-function readScreenshotAsBase64() {
-    return new Promise((resolve) => {
-        const file = paymentScreenshotInput && paymentScreenshotInput.files && paymentScreenshotInput.files[0];
-        if (!file) {
-            resolve({ base64: "", type: "", name: "" });
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const dataUrl = e.target.result || "";
-            const base64 = dataUrl.split(",")[1] || "";
-            resolve({
-                base64: base64,
-                type: file.type || "image/png",
-                name: file.name || "screenshot.png"
-            });
-        };
-        reader.onerror = function () {
-            resolve({ base64: "", type: "", name: "" });
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function buildRegistrationPayload(screenshotData = {}) {
+function buildRegistrationPayload() {
     const raw = {};
 
     Array.from(registrationForm.elements).forEach((element) => {
@@ -225,14 +195,11 @@ function buildRegistrationPayload(screenshotData = {}) {
 
         paymentStatus: "Paid - UPI details submitted",
         transactionId: transactionIdInput.value.trim(),
-        payerUpiId: payerUpiIdInput.value.trim(),
-        screenshotBase64: screenshotData.base64 || "",
-        screenshotType: screenshotData.type || "",
-        screenshotName: screenshotData.name || ""
+        payerUpiId: payerUpiIdInput.value.trim()
     };
 }
 
-function submitRegistration(screenshotData = {}) {
+function submitRegistration() {
     const submitButton = registrationForm.querySelector('button[type="submit"]');
     const modalSubmitButton = document.getElementById("confirmPaymentBtn");
     const originalText = submitButton.textContent;
@@ -251,7 +218,7 @@ function submitRegistration(screenshotData = {}) {
     submitButton.textContent = "Submitting...";
     modalSubmitButton.textContent = "Submitting...";
 
-    const registrationData = buildRegistrationPayload(screenshotData);
+    const registrationData = buildRegistrationPayload();
 
     return fetch(GOOGLE_APPS_SCRIPT_URL, {
         method: "POST",
@@ -377,29 +344,15 @@ registrationForm.addEventListener("submit", function (event) {
     openPaymentModal();
 });
 
-confirmPaymentBtn.addEventListener("click", async function () {
+confirmPaymentBtn.addEventListener("click", function () {
     if (!transactionIdInput.value.trim()) {
         transactionIdInput.setCustomValidity("Please enter your UPI transaction ID.");
         transactionIdInput.reportValidity();
         return;
     }
+
     transactionIdInput.setCustomValidity("");
-
-    if (paymentScreenshotInput && !paymentScreenshotInput.files.length) {
-        paymentScreenshotInput.setCustomValidity("Please attach your payment screenshot.");
-        paymentScreenshotInput.reportValidity();
-        return;
-    }
-    if (paymentScreenshotInput) {
-        paymentScreenshotInput.setCustomValidity("");
-    }
-
-    try {
-        const screenshotData = await readScreenshotAsBase64();
-        await submitRegistration(screenshotData);
-    } catch (error) {
-        // error handling inside submitRegistration
-    }
+    submitRegistration().catch(() => {});
 });
 
 cancelPaymentBtn.addEventListener("click", closePaymentModal);
